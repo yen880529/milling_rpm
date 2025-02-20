@@ -44,20 +44,20 @@ p {
 input {
   width: 100%;
   padding: 12px;
-  margin-top: 5px;
-  border: 1px solid #ddd;
+  border: 2px solid #007bff; /* 和 select 相同的藍色邊框 */
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: #f9f9f9;
-  transition: border-color 0.3s ease;
+  background-color: #fff; /* 背景統一為白色 */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
 }
 
 input:focus {
-  border-color: #007bff;
-  outline: none;
-  background-color: #fff;
+  border-color: #0056b3; /* 深藍色加強選取效果 */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 添加光暈效果 */
 }
+
 
 .button-group {
   display: flex;
