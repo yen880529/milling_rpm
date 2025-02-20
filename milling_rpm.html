@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铣刀切削參數計算器</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        label, input, select, button { display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>铣刀切削參數計算器</h2>
+    
+    <label for="material">材料類別:</label>
+    <select id="material" onchange="updateParameters()">
+        <option value="steel">鋼材</option>
+        <option value="aluminum">鋁材</option>
+        <option value="stainless">不銹鋼</option>
+        <option value="castIron">鑄鐵</option>
+        <option value="copperAlloy">合銅</option> <!-- 新增合銅選項 -->
+    </select>
+    
+    <label for="toolMaterial">刀具材質:</label>
+    <select id="toolMaterial" onchange="updateParameters()">
+        <option value="hss">高速鋼</option>
+        <option value="carbide">硬質合金</option>
+        <option value="ceramic">陶瓷刀具</option>
+        <option value="cbn">CBN</option>
+        <option value="pcd">PCD</option>
+    </select>
+    
+    <label for="vc">切削速度 Vc (m/min):</label>
+    <input type="number" id="vc" step="any">
+    
+    <label for="dc">刀盤直徑 DC (mm):</label>
+    <input type="number" id="dc" step="any">
+    
+    <label for="fz">每刃進給量 fz (mm/tooth):</label>
+    <input type="number" id="fz" step="any">
+    
+    <label for="z">刀盤刃數 Z (tooth):</label>
+    <input type="number" id="z" step="any">
+    
+    <label for="re">刀具鼻角半徑 Re (mm):</label>
+    <input type="number" id="re" step="any">
+    
+    <label for="l">加工長度 L (mm):</label>
+    <input type="number" id="l" step="any">
+    
+    <label for="s">主軸轉速 S (rpm):</label>
+    <input type="number" id="s" step="any">
+    
+    <button onclick="calculate()">計算</button>
+    
+    <h3>結果：</h3>
+    <p>主軸轉速 S (rpm): <span id="resultS"></span></p>
+    <p>進給速度 F (mm/min): <span id="resultF"></span></p>
+    <p>表面粗糙度 Ra (μm): <span id="resultRa"></span> μm</p>
+    <p>切削時間 T (min): <span id="resultT"></span> min</p>
+    
+    <script>
+        const parameters = {
+            steel: {
+                hss: { vc: 20, fz: 0.1 },
+                carbide: { vc: 30, fz: 0.15 },
+                ceramic: { vc: 40, fz: 0.05 },
+                cbn: { vc: 60, fz: 0.1 },
+                pcd: { vc: 80, fz: 0.2 }
+            },
+            aluminum: {
+                hss: { vc: 100, fz: 0.2 },
+                carbide: { vc: 150, fz: 0.25 },
+                ceramic: { vc: 200, fz: 0.3 },
+                cbn: { vc: 220, fz: 0.4 },
+                pcd: { vc: 250, fz: 0.5 }
+            },
+            stainless: {
+                hss: { vc: 15, fz: 0.08 },
+                carbide: { vc: 20, fz: 0.1 },
+                ceramic: { vc: 30, fz: 0.05 },
+                cbn: { vc: 40, fz: 0.1 },
+                pcd: { vc: 50, fz: 0.15 }
+            },
+            castIron: {
+                hss: { vc: 60, fz: 0.2 },
+                carbide: { vc: 80, fz: 0.3 },
+                ceramic: { vc: 120, fz: 0.15 },
+                cbn: { vc: 140, fz: 0.25 },
+                pcd: { vc: 160, fz: 0.4 }
+            },
+            copperAlloy: {  // 新增合銅的切削參數
+                hss: { vc: 40, fz: 0.1 },
+                carbide: { vc: 60, fz: 0.15 },
+                ceramic: { vc: 80, fz: 0.2 },
+                cbn: { vc: 100, fz: 0.25 },
+                pcd: { vc: 120, fz: 0.3 }
+            }
+        };
+        
+        function updateParameters() {
+            const material = document.getElementById('material').value;
+            const toolMaterial = document.getElementById('toolMaterial').value;
+            const selectedParams = parameters[material][toolMaterial];
+            
+            document.getElementById('vc').value = selectedParams.vc;
+            document.getElementById('fz').value = selectedParams.fz;
+        }
+
+        function calculate() {
+            let vc = parseFloat(document.getElementById('vc').value);
+            let dc = parseFloat(document.getElementById('dc').value);
+            let fz = parseFloat(document.getElementById('fz').value);
+            let z = parseFloat(document.getElementById('z').value);
+            let re = parseFloat(document.getElementById('re').value);
+            let l = parseFloat(document.getElementById('l').value);
+            let s = parseFloat(document.getElementById('s').value);
+            
+            if (isNaN(vc) || isNaN(dc) || isNaN(fz) || isNaN(z) || isNaN(re) || isNaN(l) || isNaN(s)) {
+                alert("請填寫所有數據！");
+                return;
+            }
+            
+            let vf = fz * z * s;
+            let Ra = (fz ** 2) / (8 * re) * 1000; // 轉換為 μm
+            let T = l / vf;
+            
+            document.getElementById('resultS').innerText = s.toFixed(2);
+            document.getElementById('resultF').innerText = vf.toFixed(2);
+            document.getElementById('resultRa').innerText = Ra.toFixed(4);
+            document.getElementById('resultT').innerText = T.toFixed(2);
+        }
+        
+        // 初始化預設值
+        updateParameters();
+    </script>
+</body>
+</html>
